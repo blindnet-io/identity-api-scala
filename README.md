@@ -28,6 +28,21 @@
 
 :rocket: Check out our [Quick Start Guide](https://blindnet.dev/docs/quickstart) to get started in a snap.
 
+## Usage
+
+First build the identity API by running the `assembly` SBT task. The resulting `identity.jar` file can be found in the
+`target` folder, under the currently used Scala version.
+
+Then run it: `java -jar identity.jar`.
+
+Some options can be configured using environment variables:
+
+| Name                       | Description                  | Example                          | Default                  |
+|----------------------------|------------------------------|----------------------------------|:-------------------------|
+| BN_ENV                     | Environment                  | development, staging, production | development              |
+| BN_PORT                    | HTTP port                    | 80                               | 8028                     |
+| BN_HOST                    | HTTP host                    | 0.0.0.0                          | 127.0.0.1                |
+
 ## Contributing
 
 Contributions of all kinds are always welcome!

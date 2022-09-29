@@ -3,9 +3,10 @@ ThisBuild / scalaVersion := "3.1.3"
 
 Test / fork := true
 
-val circeVersion = "0.14.2"
+val circeVersion = "0.14.3"
+val doobieVersion = "1.0.0-RC2"
 val http4sVersion = "0.23.12"
-val tapirVersion = "1.0.6"
+val tapirVersion = "1.1.0"
 
 lazy val root = (project in file("."))
   .settings(
@@ -25,10 +26,13 @@ lazy val root = (project in file("."))
       "org.http4s"                  %% "http4s-blaze-server"             % http4sVersion,
       "org.http4s"                  %% "http4s-circe"                    % http4sVersion,
       "org.scalatest"               %% "scalatest"                       % "3.2.12" % Test,
-      "org.slf4j"                   %  "slf4j-simple"                    % "2.0.0",
+      "org.slf4j"                   %  "slf4j-simple"                    % "2.0.1",
+      "org.tpolecat"                %% "doobie-core"                     % doobieVersion,
+      "org.tpolecat"                %% "doobie-hikari"                   % doobieVersion,
+      "org.tpolecat"                %% "doobie-postgres"                 % doobieVersion,
       "org.typelevel"               %% "cats-effect"                     % "3.3.14",
       "org.typelevel"               %% "cats-effect-testing-scalatest"   % "1.4.0" % Test,
-      "org.typelevel"               %% "log4cats-slf4j"                  % "2.4.0",
+      "org.typelevel"               %% "log4cats-slf4j"                  % "2.5.0",
     ),
     assembly / mainClass := Some("io.blindnet.identity.Main"),
     assembly / assemblyJarName := "identity.jar",
