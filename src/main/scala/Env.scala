@@ -1,7 +1,5 @@
 package io.blindnet.identity
 
-import db.DbConfig
-
 object Env {
   val get: Env = sys.env.getOrElse("BN_ENV", "") match
     case "production" => ProductionEnv()
@@ -19,7 +17,6 @@ abstract class Env() {
   val dbUri: String
   val dbUsername: String
   val dbPassword: String
-  val dbConfig: DbConfig = DbConfig(dbUri, dbUsername, dbPassword)
 }
 
 class ProductionEnv() extends Env {
