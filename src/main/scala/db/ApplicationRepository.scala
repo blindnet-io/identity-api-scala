@@ -9,8 +9,10 @@ import doobie.implicits.*
 import doobie.postgres.*
 import doobie.postgres.implicits.*
 
+import java.util.UUID
+
 class ApplicationRepository(xa: Transactor[IO]) {
-  def findById(id: String): IO[Option[Application]] =
+  def findById(id: UUID): IO[Option[Application]] =
     sql"select id, name, key from applications where id=$id"
       .query[Application].option.transact(xa)
 
