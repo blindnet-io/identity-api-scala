@@ -10,7 +10,7 @@ object Env {
 abstract class Env() {
   val name: String
 
-  val port: Int = sys.env.getOrElse("BN_PORT", "8028").toInt
+  val port: Int = sys.env.getOrElse("BN_PORT", "8029").toInt
   val host: String = sys.env.getOrElse("BN_HOST", "127.0.0.1")
 
   val migrate: Boolean
