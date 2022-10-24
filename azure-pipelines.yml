@@ -12,7 +12,7 @@ resources:
 
 variables:
   dockerRegistryServiceConnection: 'blindnet-acr'
-  subscriptionServiceConnection: 'blindnet-identity-arm'
+  subscriptionServiceConnection: 'blindnet-identity-scala-arm'
   imageRepository: 'identityscala'
   containerRegistry: 'blindnet.azurecr.io'
   dockerfilePath: 'Dockerfile'
@@ -60,7 +60,7 @@ steps:
     displayName: Deploy
     inputs:
       azureSubscription: $(subscriptionServiceConnection)
-      appName: 'blindnet-identity-scala'
+      appName: 'identity-api-scala'
       imageName: $(containerRegistry)/$(imageRepository):$(tag)
       resourceGroupName: 'identity-scala'
       deployToSlotOrASE: true
