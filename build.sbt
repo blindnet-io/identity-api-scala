@@ -34,6 +34,7 @@ lazy val root = (project in file("."))
       "org.typelevel"               %% "cats-effect"                     % "3.3.14",
       "org.typelevel"               %% "cats-effect-testing-scalatest"   % "1.4.0" % Test,
       "org.typelevel"               %% "log4cats-slf4j"                  % "2.5.0",
+      "is.cir"                      %% "ciris"                           % "2.3.3"
     ),
     assembly / mainClass := Some("io.blindnet.identity.Main"),
     assembly / assemblyJarName := "identity.jar",

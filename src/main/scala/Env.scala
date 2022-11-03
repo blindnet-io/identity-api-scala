@@ -1,31 +1,56 @@
 package io.blindnet.identity
 
+import ciris.*
+import cats.implicits.*
+import cats.effect.*
+
+case class Env(
+    name: String,
+    port: Int,
+    host: String,
+    migrate: Boolean,
+    dbUri: String,
+    dbUsername: String,
+    dbPassword: String
+)
+
 object Env {
-  val get: Env = sys.env.getOrElse("BN_ENV", "") match
-    case "production" => ProductionEnv()
-    case "staging" => StagingEnv()
-    case _ => DevelopmentEnv()
+
+  def get: IO[Env] = env("BN_ENV")
+    .as[String]
+    .flatMap {
+      case "production" => ProductionEnv().load
+      case "staging"    => StagingEnv().load
+      case _            => DevelopmentEnv().load
+    }
+    .load[IO]
+
 }
 
-abstract class Env() {
+trait EnvLoader {
   val name: String
 
-  val port: Int = sys.env.getOrElse("BN_PORT", "8029").toInt
-  val host: String = sys.env.getOrElse("BN_HOST", "127.0.0.1")
+  def port: ConfigValue[Effect, Int]    = env("BN_PORT").as[Int].default(8029)
+  def host: ConfigValue[Effect, String] = env("BN_HOST").as[String].default("127.0.0.1")
 
-  val migrate: Boolean
-  val dbUri: String
-  val dbUsername: String
-  val dbPassword: String
+  def migrate: ConfigValue[Effect, Boolean]
+  def dbUri: ConfigValue[Effect, String]
+  def dbUsername: ConfigValue[Effect, String]
+  def dbPassword: ConfigValue[Effect, String]
+
+  def load =
+    (ConfigValue.default(name), port, host, migrate, dbUri, dbUsername, dbPassword)
+      .parMapN(Env.apply)
+
 }
 
-class ProductionEnv() extends Env {
+class ProductionEnv() extends EnvLoader {
   override val name: String = "production"
 
-  override val migrate: Boolean = sys.env.get("BN_MIGRATE").contains("yes")
-  override val dbUri: String = sys.env("BN_DB_URI")
-  override val dbUsername: String = sys.env("BN_DB_USER")
-  override val dbPassword: String = sys.env("BN_DB_PASSWORD")
+  override def migrate    = env("BN_MIGRATE").map(_.equals("yes"))
+  override def dbUri      = env("BN_DB_URI")
+  override def dbUsername = env("BN_DB_USER")
+  override def dbPassword = env("BN_DB_PASSWORD")
 }
 
 class StagingEnv() extends ProductionEnv {
@@ -35,8 +60,8 @@ class StagingEnv() extends ProductionEnv {
 class DevelopmentEnv() extends StagingEnv {
   override val name: String = "development"
 
-  override val migrate: Boolean = sys.env.get("BN_MIGRATE").forall(_ == "yes")
-  override val dbUri: String = sys.env.getOrElse("BN_DB_URI", "jdbc:postgresql://127.0.0.1/identity")
-  override val dbUsername: String = sys.env.getOrElse("BN_DB_USER", "identity")
-  override val dbPassword: String = sys.env.getOrElse("BN_DB_PASSWORD", "identity")
+  override def migrate    = super.migrate.default(true)
+  override def dbUri      = super.dbUri.default("jdbc:postgresql://127.0.0.1:5433/identity")
+  override def dbUsername = super.dbUsername.default("identity")
+  override def dbPassword = super.dbPassword.default("identity")
 }
