@@ -9,7 +9,7 @@ import org.http4s.server.*
 import org.http4s.server.websocket.WebSocketBuilder2
 import org.http4s.syntax.*
 
-class ServerApp {
+class ServerApp(env: Env) {
   def app(services: Services): HttpApp[IO] =
     Router(
       "/v1" -> services.routes
@@ -17,11 +17,12 @@ class ServerApp {
 
   val server: Resource[IO, Server] =
     for {
-      repos <- Repositories()
-      services = Services(repos)
+      repos <- Repositories(env)
+      services = Services(repos, env)
       server <- BlazeServerBuilder[IO]
-        .bindHttp(Env.get.port, Env.get.host)
+        .bindHttp(env.port, env.host)
         .withHttpApp(app(services))
         .resource
     } yield server
+
 }
