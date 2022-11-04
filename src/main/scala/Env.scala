@@ -61,7 +61,7 @@ class DevelopmentEnv() extends StagingEnv {
   override val name: String = "development"
 
   override def migrate    = super.migrate.default(true)
-  override def dbUri      = super.dbUri.default("jdbc:postgresql://127.0.0.1:5433/identity")
+  override def dbUri      = super.dbUri.default("jdbc:postgresql://127.0.0.1/identity")
   override def dbUsername = super.dbUsername.default("identity")
   override def dbPassword = super.dbPassword.default("identity")
 }
