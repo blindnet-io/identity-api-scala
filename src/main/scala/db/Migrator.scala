@@ -10,7 +10,6 @@ object Migrator {
     Flyway
       .configure()
       .dataSource(env.dbUri, env.dbUsername, env.dbPassword)
-      .table("Flyway")
       .group(true)
       .load()
       .migrate()
