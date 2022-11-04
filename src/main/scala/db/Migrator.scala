@@ -5,11 +5,15 @@ import cats.effect.IO
 import org.flywaydb.core.Flyway
 
 object Migrator {
-  def migrate(): IO[Unit] = IO {
-    Flyway.configure()
-      .dataSource(Env.get.dbUri, Env.get.dbUsername, Env.get.dbPassword)
+  def migrate(env: Env): IO[Unit] = IO {
+
+    Flyway
+      .configure()
+      .dataSource(env.dbUri, env.dbUsername, env.dbPassword)
+      .table("Flyway")
       .group(true)
       .load()
       .migrate()
   }
+
 }

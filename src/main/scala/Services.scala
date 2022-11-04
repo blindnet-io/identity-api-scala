@@ -11,18 +11,20 @@ import sttp.tapir.server.http4s.Http4sServerInterpreter
 import sttp.tapir.swagger.SwaggerUIOptions
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
-class Services(repos: Repositories) {
+class Services(repos: Repositories, env: Env) {
   private val applicationService = ApplicationService(repos)
 
   private val applicationEndpoints = ApplicationEndpoints(applicationService)
 
   private val apiEndpoints = List(
-    applicationEndpoints.list,
+    applicationEndpoints.list
   ).flatten
 
-  private val swaggerEndpoints = SwaggerInterpreter(swaggerUIOptions = SwaggerUIOptions.default.pathPrefix(List("swagger")))
-    .fromServerEndpoints[IO](apiEndpoints, "Identity API", Env.get.name)
+  private val swaggerEndpoints =
+    SwaggerInterpreter(swaggerUIOptions = SwaggerUIOptions.default.pathPrefix(List("swagger")))
+      .fromServerEndpoints[IO](apiEndpoints, "Identity API", env.name)
 
   val routes: HttpRoutes[IO] =
     Http4sServerInterpreter[IO]().toRoutes(apiEndpoints ++ swaggerEndpoints)
+
 }
