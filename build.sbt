@@ -15,11 +15,13 @@ lazy val root = (project in file("."))
     organizationName := "blindnet",
     organizationHomepage := Some(url("https://blindnet.io")),
     idePackagePrefix := Some("io.blindnet.identity"),
+    resolvers += "Blindnet Snapshots" at "https://nexus.blindnet.io/repository/maven-snapshots",
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.tapir" %% "tapir-core"                      % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-http4s-server"             % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"                % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle"         % tapirVersion,
+      "io.blindnet"                 %% "identity-client"                 % "1.0.1-SNAPSHOT",
       "io.circe"                    %% "circe-core"                      % circeVersion,
       "io.circe"                    %% "circe-generic"                   % circeVersion,
       "io.circe"                    %% "circe-literal"                   % circeVersion % Test,

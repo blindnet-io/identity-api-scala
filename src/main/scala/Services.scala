@@ -4,6 +4,7 @@ import endpoints.*
 import services.*
 
 import cats.effect.IO
+import io.blindnet.identityclient.auth.StAuthenticator
 import org.http4s.HttpRoutes
 import org.http4s.server.middleware.CORS
 import org.http4s.server.websocket.WebSocketBuilder2
@@ -12,13 +13,18 @@ import sttp.tapir.swagger.SwaggerUIOptions
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 class Services(repos: Repositories, env: Env) {
+  private val authenticator = StAuthenticator(repos.accounts)
+
+  private val appGroupService = AppGroupService(repos)
   private val applicationService = ApplicationService(repos)
   private val authService = AuthService(repos)
 
-  private val applicationEndpoints = ApplicationEndpoints(applicationService)
+  private val appGroupEndpoints = AppGroupEndpoints(appGroupService, authenticator)
+  private val applicationEndpoints = ApplicationEndpoints(applicationService, authenticator)
   private val authEndpoints = AuthEndpoints(authService)
 
   private val apiEndpoints = List(
+    appGroupEndpoints.list,
     applicationEndpoints.list,
     authEndpoints.list,
   ).flatten

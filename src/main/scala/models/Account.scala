@@ -2,11 +2,12 @@ package io.blindnet.identity
 package models
 
 import cats.effect.*
+import io.blindnet.identityclient.auth.St
 import org.mindrot.jbcrypt.BCrypt
 
 import java.util.UUID
 
-case class Account(id: UUID, email: String, password: String, token: String) {
+case class Account(id: UUID, email: String, password: String, token: String) extends St {
   def verifyPassword(in: String): IO[Boolean] = IO {
     BCrypt.checkpw(in, password)
   }
