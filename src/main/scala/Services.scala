@@ -13,11 +13,14 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 class Services(repos: Repositories, env: Env) {
   private val applicationService = ApplicationService(repos)
+  private val authService = AuthService(repos)
 
   private val applicationEndpoints = ApplicationEndpoints(applicationService)
+  private val authEndpoints = AuthEndpoints(authService)
 
   private val apiEndpoints = List(
-    applicationEndpoints.list
+    applicationEndpoints.list,
+    authEndpoints.list,
   ).flatten
 
   private val swaggerEndpoints =

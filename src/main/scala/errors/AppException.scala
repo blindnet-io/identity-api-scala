@@ -20,6 +20,7 @@ extension[T](o: Option[T]) {
     case None => IO.unit
   
   def orBadRequest(message: => String): IO[T] = orRaise(BadRequestException(message))
+  def orForbidden: IO[T] = orRaise(ForbiddenException())
   def orNotFound: IO[T] = orRaise(NotFoundException())
   def thenBadRequest(message: => String): IO[Unit] = thenRaise(BadRequestException(message))
   def thenNotFound: IO[Unit] = thenRaise(NotFoundException())
@@ -29,6 +30,7 @@ extension[T](o: IO[Option[T]]) {
   def orRaise(t: => Throwable): IO[T] = o.flatMap(_.orRaise(t))
   
   def orBadRequest(message: => String): IO[T] = o.flatMap(_.orBadRequest(message))
+  def orForbidden: IO[T] = o.flatMap(_.orForbidden)
   def orNotFound: IO[T] = o.flatMap(_.orNotFound)
   def thenBadRequest(message: => String): IO[Unit] = o.flatMap(_.thenBadRequest(message))
   def thenNotFound: IO[Unit] = o.flatMap(_.thenNotFound)
