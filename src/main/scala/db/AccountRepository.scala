@@ -14,14 +14,22 @@ import java.util.UUID
 
 class AccountRepository(xa: Transactor[IO]) extends StRepository[Account, IO] {
   def findByEmail(email: String): IO[Option[Account]] =
-    sql"select id, email, password, token from accounts where email=$email"
+    sql"select id, email, password, token, verified, email_token from accounts where email=$email"
       .query[Account].option.transact(xa)
 
   override def findByToken(token: String): IO[Option[Account]] =
-    sql"select id, email, password, token from accounts where token=$token"
+    sql"select id, email, password, token, verified, email_token from accounts where token=$token"
       .query[Account].option.transact(xa)
 
-  def insert(id: UUID, email: String, password: String, token: String): IO[Unit] =
-    sql"insert into accounts (id, email, password, token) values ($id, $email, $password, $token)"
+  def insert(id: UUID, email: String, password: String, token: String, emailToken: String): IO[Unit] =
+    sql"insert into accounts (id, email, password, token, email_token) values ($id, $email, $password, $token, $emailToken)"
+      .update.run.transact(xa).void
+
+  def setVerified(id: UUID): IO[Unit] =
+    sql"update accounts set verified=true where id=$id"
+      .update.run.transact(xa).void
+
+  def updateEmail(id: UUID, email: String, emailToken: String): IO[Unit] =
+    sql"update accounts set email=$email, email_token=$emailToken, verified=false where id=$id"
       .update.run.transact(xa).void
 }

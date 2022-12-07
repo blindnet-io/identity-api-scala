@@ -3,8 +3,11 @@ package services
 
 import endpoints.objects.*
 import errors.*
+import mail.*
 import models.Account
+import util.Resources
 
+import cats.data.OptionT
 import cats.effect.*
 import cats.effect.std.UUIDGen
 
@@ -17,18 +20,54 @@ class AuthService(repos: Repositories) {
   private def generateStaticToken(): IO[String] =
     IO(Random.alphanumeric.take(128).mkString)
 
+  private def sendVerificationEmail(email: String, emailToken: String): IO[Unit] =
+    def processTemplate(template: String, env: Env): String =
+      template.replace("$verification_link$", s"${env.baseUrl}/verify?token=$emailToken")
+
+    for {
+      env <- Env.get
+      template <- Resources.readAsString("/email/verify.txt")
+      richTemplate <- Resources.readAsString("/email/verify.html")
+      mail = Mail(
+        from = Sender(env.emailFromEmail, Some(env.emailFromName)),
+        to = List(email),
+        subject = "Account verification",
+        message = template.map(processTemplate(_, env)).get,
+        richMessage = richTemplate.map(processTemplate(_, env)),
+      )
+      _ <- mail.send(MailConfig(env.emailUsername, env.emailPassword, env.emailHost))
+    } yield ()
+
   def login(payload: LoginPayload): IO[LoginResponsePayload] =
     for {
       account <- repos.accounts.findByEmail(payload.email).orForbidden
       _ <- account.verifyPassword(payload.password).flatMap(_.orForbidden)
-    } yield LoginResponsePayload(account.token)
+    } yield LoginResponsePayload(account.token, AccountStatusPayload(account.verified))
   
   def register(payload: RegisterPayload): IO[LoginResponsePayload] =
     for {
       _ <- repos.accounts.findByEmail(payload.email).thenBadRequest("Account already exists")
       id <- UUIDGen.randomUUID
       token <- generateStaticToken()
+      emailToken <- generateStaticToken()
       hashedPassword <- Account.hashPassword(payload.password)
-      _ <- repos.accounts.insert(id, payload.email, hashedPassword, token)
-    } yield LoginResponsePayload(token)
+      _ <- repos.accounts.insert(id, payload.email, hashedPassword, token, emailToken)
+      _ <- sendVerificationEmail(payload.email, emailToken)
+    } yield LoginResponsePayload(token, AccountStatusPayload(false))
+
+  def status(acc: Account)(x: Unit): IO[AccountStatusPayload] =
+    IO.pure(AccountStatusPayload(acc.verified))
+
+  def verify(acc: Account)(payload: VerifyEmailPayload): IO[Unit] =
+    for {
+      _ <- (!acc.verified).orBadRequest("Already verified")
+      _ <- (acc.emailToken == payload.token).orBadRequest("Invalid token")
+      _ <- repos.accounts.setVerified(acc.id)
+    } yield ()
+
+  def resendVerification(acc: Account)(x: Unit): IO[Unit] =
+    for {
+      _ <- (!acc.verified).orBadRequest("Already verified")
+      _ <- sendVerificationEmail(acc.email, acc.emailToken)
+    } yield ()
 }

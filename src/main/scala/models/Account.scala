@@ -7,7 +7,7 @@ import org.mindrot.jbcrypt.BCrypt
 
 import java.util.UUID
 
-case class Account(id: UUID, email: String, password: String, token: String) extends St {
+case class Account(id: UUID, email: String, password: String, token: String, verified: Boolean, emailToken: String) extends St {
   def verifyPassword(in: String): IO[Boolean] = IO {
     BCrypt.checkpw(in, password)
   }

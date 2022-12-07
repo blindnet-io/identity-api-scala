@@ -14,14 +14,16 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 class Services(repos: Repositories, env: Env) {
   private val authenticator = StAuthenticator(repos.accounts)
+  private val verifiedAuthenticator = authenticator.flatMapSt(acc =>
+    Either.cond(acc.verified, acc, "Unverified account."))
 
   private val appGroupService = AppGroupService(repos)
   private val applicationService = ApplicationService(repos)
   private val authService = AuthService(repos)
 
-  private val appGroupEndpoints = AppGroupEndpoints(appGroupService, authenticator)
-  private val applicationEndpoints = ApplicationEndpoints(applicationService, authenticator)
-  private val authEndpoints = AuthEndpoints(authService)
+  private val appGroupEndpoints = AppGroupEndpoints(appGroupService, verifiedAuthenticator)
+  private val applicationEndpoints = ApplicationEndpoints(applicationService, verifiedAuthenticator)
+  private val authEndpoints = AuthEndpoints(authService, authenticator)
 
   private val apiEndpoints = List(
     appGroupEndpoints.list,
