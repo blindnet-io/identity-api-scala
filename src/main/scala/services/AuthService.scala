@@ -73,14 +73,16 @@ class AuthService(repos: Repositories) {
 
   def updateEmail(acc: Account)(payload: UpdateEmailPayload): IO[Unit] =
     for {
+      _ <- acc.verifyPassword(payload.current_password).map(_.orForbidden)
       emailToken <- generateStaticToken()
       _ <- repos.accounts.updateEmail(acc.id, payload.email, emailToken)
     } yield ()
 
   def changePassword(acc: Account)(payload: ChangePasswordPayload): IO[LoginResponsePayload] =
     for {
+      _ <- acc.verifyPassword(payload.current_password).map(_.orForbidden)
       token <- generateStaticToken()
-      hashedPassword <- Account.hashPassword(payload.password)
+      hashedPassword <- Account.hashPassword(payload.new_password)
       _ <- repos.accounts.updatePassword(acc.id, hashedPassword, token)
     } yield LoginResponsePayload(token, AccountStatusPayload(acc.verified))
 }
