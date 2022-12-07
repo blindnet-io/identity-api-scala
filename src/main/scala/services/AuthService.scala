@@ -70,4 +70,17 @@ class AuthService(repos: Repositories) {
       _ <- (!acc.verified).orBadRequest("Already verified")
       _ <- sendVerificationEmail(acc.email, acc.emailToken)
     } yield ()
+
+  def updateEmail(acc: Account)(payload: UpdateEmailPayload): IO[Unit] =
+    for {
+      emailToken <- generateStaticToken()
+      _ <- repos.accounts.updateEmail(acc.id, payload.email, emailToken)
+    } yield ()
+
+  def changePassword(acc: Account)(payload: ChangePasswordPayload): IO[LoginResponsePayload] =
+    for {
+      token <- generateStaticToken()
+      hashedPassword <- Account.hashPassword(payload.password)
+      _ <- repos.accounts.updatePassword(acc.id, hashedPassword, token)
+    } yield LoginResponsePayload(token, AccountStatusPayload(acc.verified))
 }

@@ -52,11 +52,28 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
       .in("resend-verification")
       .serverLogicSuccess(service.resendVerification)
 
+  val updateEmail: ApiEndpoint =
+    authedBase.summary("Update email")
+      .post
+      .in("update-email")
+      .in(jsonBody[UpdateEmailPayload])
+      .serverLogicSuccess(service.updateEmail)
+
+  val changePassword: ApiEndpoint =
+    authedBase.summary("Change password")
+      .post
+      .in("change-password")
+      .in(jsonBody[ChangePasswordPayload])
+      .out(jsonBody[LoginResponsePayload])
+      .serverLogicSuccess(service.changePassword)
+
   val list: List[ApiEndpoint] = List(
     login,
     register,
     status,
     verify,
     resendVerification,
+    updateEmail,
+    changePassword,
   )
 }

@@ -32,4 +32,8 @@ class AccountRepository(xa: Transactor[IO]) extends StRepository[Account, IO] {
   def updateEmail(id: UUID, email: String, emailToken: String): IO[Unit] =
     sql"update accounts set email=$email, email_token=$emailToken, verified=false where id=$id"
       .update.run.transact(xa).void
+
+  def updatePassword(id: UUID, password: String, token: String): IO[Unit] =
+    sql"update accounts set password=$password, token=$token where id=$id"
+      .update.run.transact(xa).void
 }
