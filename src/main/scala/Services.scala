@@ -1,6 +1,7 @@
 package io.blindnet.identity
 
 import endpoints.*
+import errors.ErrorHandler
 import services.*
 
 import cats.effect.IO
@@ -8,7 +9,7 @@ import io.blindnet.identityclient.auth.StAuthenticator
 import org.http4s.HttpRoutes
 import org.http4s.server.middleware.CORS
 import org.http4s.server.websocket.WebSocketBuilder2
-import sttp.tapir.server.http4s.Http4sServerInterpreter
+import sttp.tapir.server.http4s.{Http4sServerInterpreter, Http4sServerOptions}
 import sttp.tapir.swagger.SwaggerUIOptions
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
@@ -35,7 +36,16 @@ class Services(repos: Repositories, env: Env) {
     SwaggerInterpreter(swaggerUIOptions = SwaggerUIOptions.default.pathPrefix(List("swagger")))
       .fromServerEndpoints[IO](apiEndpoints, "Identity API", env.name)
 
-  val routes: HttpRoutes[IO] =
-    Http4sServerInterpreter[IO]().toRoutes(apiEndpoints ++ swaggerEndpoints)
+  private val http4sOptions = Http4sServerOptions
+    .customiseInterceptors[IO]
+    .serverLog(None)
+    .exceptionHandler(None)
+    .options
 
+  val routes: HttpRoutes[IO] =
+    CORS.policy.withAllowOriginAll(
+      ErrorHandler(env)(
+        Http4sServerInterpreter[IO](http4sOptions).toRoutes(apiEndpoints ++ swaggerEndpoints)
+      )
+    )
 }

@@ -18,6 +18,7 @@ case class Env(
     emailPassword: String,
     emailFromEmail: String,
     emailFromName: String,
+    sendInternalErrorMessages: Boolean,
 )
 
 object Env {
@@ -51,10 +52,13 @@ trait EnvLoader {
   def emailFromEmail: ConfigValue[Effect, String]
   def emailFromName: ConfigValue[Effect, String]
 
+  def sendInternalErrorMessages: ConfigValue[Effect, Boolean]
+
   def load =
     (ConfigValue.default(name), port, host, baseUrl,
       migrate, dbUri, dbUsername, dbPassword,
-      emailHost, emailUsername, emailPassword, emailFromEmail, emailFromName)
+      emailHost, emailUsername, emailPassword, emailFromEmail, emailFromName,
+      sendInternalErrorMessages)
       .parMapN(Env.apply)
 
 }
@@ -72,6 +76,8 @@ class ProductionEnv() extends EnvLoader {
   override def emailPassword: ConfigValue[Effect, String] = env("BN_EMAIL_PASSWORD")
   override def emailFromEmail: ConfigValue[Effect, String] = env("BN_EMAIL_FROM_EMAIL")
   override def emailFromName: ConfigValue[Effect, String] = env("BN_EMAIL_FROM_NAME")
+
+  override def sendInternalErrorMessages: ConfigValue[Effect, Boolean] = ConfigValue.default(false)
 }
 
 class StagingEnv() extends ProductionEnv {
@@ -85,4 +91,6 @@ class DevelopmentEnv() extends StagingEnv {
   override def dbUri      = super.dbUri.default("jdbc:postgresql://127.0.0.1/identity")
   override def dbUsername = super.dbUsername.default("identity")
   override def dbPassword = super.dbPassword.default("identity")
+
+  override def sendInternalErrorMessages: ConfigValue[Effect, Boolean] = ConfigValue.default(true)
 }
