@@ -14,28 +14,19 @@ import cats.effect.std.UUIDGen
 import java.util.UUID
 import scala.util.Random
 
-class AuthService(repos: Repositories) {
+class AuthService(repos: Repositories, mailService: MailService, templates: MailTemplates) {
   given UUIDGen[IO] = UUIDGen.fromSync
 
   private def generateStaticToken(): IO[String] =
     IO(Random.alphanumeric.take(128).mkString)
 
   private def sendVerificationEmail(email: String, emailToken: String): IO[Unit] =
-    def processTemplate(template: String, env: Env): String =
-      template.replace("$verification_link$", s"${env.baseUrl}/verify?token=$emailToken")
-
     for {
       env <- Env.get
-      template <- Resources.readAsString("/email/verify.txt")
-      richTemplate <- Resources.readAsString("/email/verify.html")
-      mail = Mail(
-        from = Sender(env.emailFromEmail, Some(env.emailFromName)),
-        to = List(email),
-        subject = "Account verification",
-        message = template.map(processTemplate(_, env)).get,
-        richMessage = richTemplate.map(processTemplate(_, env)),
-      )
-      _ <- mail.send(MailConfig(env.emailUsername, env.emailPassword, env.emailHost))
+      template = templates.verify
+        .map(_.replace("$verification_link$", s"${env.baseUrl}/verify?token=$emailToken"))
+      mail = Mail.fromTemplate(template)(env.mailSender, List(email))
+      _ <- mailService.send(mail)
     } yield ()
 
   def login(payload: LoginPayload): IO[LoginResponsePayload] =

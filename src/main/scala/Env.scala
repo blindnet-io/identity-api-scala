@@ -1,5 +1,7 @@
 package io.blindnet.identity
 
+import mail.{MailConfig, MailSender}
+
 import ciris.*
 import cats.implicits.*
 import cats.effect.*
@@ -19,7 +21,13 @@ case class Env(
     emailFromEmail: String,
     emailFromName: String,
     sendInternalErrorMessages: Boolean,
-)
+) {
+  def mailConfig: MailConfig =
+    MailConfig(emailUsername, emailPassword, emailHost)
+
+  def mailSender: MailSender =
+    MailSender(emailFromEmail, Some(emailFromName))
+}
 
 object Env {
 

@@ -2,6 +2,7 @@ package io.blindnet.identity
 
 import endpoints.*
 import errors.ErrorHandler
+import mail.*
 import services.*
 
 import cats.effect.IO
@@ -13,14 +14,16 @@ import sttp.tapir.server.http4s.{Http4sServerInterpreter, Http4sServerOptions}
 import sttp.tapir.swagger.SwaggerUIOptions
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
-class Services(repos: Repositories, env: Env) {
+class Services(repos: Repositories, env: Env, mailTemplates: MailTemplates) {
   private val authenticator = StAuthenticator(repos.accounts)
   private val verifiedAuthenticator = authenticator.flatMapSt(acc =>
     Either.cond(acc.verified, acc, "Unverified account."))
 
+  private val mailService = MailService(env.mailConfig)
+
   private val appGroupService = AppGroupService(repos)
   private val applicationService = ApplicationService(repos)
-  private val authService = AuthService(repos)
+  private val authService = AuthService(repos, mailService, mailTemplates)
 
   private val appGroupEndpoints = AppGroupEndpoints(appGroupService, verifiedAuthenticator)
   private val applicationEndpoints = ApplicationEndpoints(applicationService, verifiedAuthenticator)
