@@ -9,16 +9,18 @@ import util.Resources
 
 import cats.data.OptionT
 import cats.effect.*
-import cats.effect.std.UUIDGen
+import cats.effect.std.{Random, UUIDGen}
 
 import java.util.UUID
-import scala.util.Random
 
 class AuthService(repos: Repositories, mailService: MailService, templates: MailTemplates) {
   given UUIDGen[IO] = UUIDGen.fromSync
 
   private def generateStaticToken(): IO[String] =
-    IO(Random.alphanumeric.take(128).mkString)
+    for {
+      random <- Random.javaSecuritySecureRandom[IO]
+      token <- random.nextAlphaNumeric.replicateA(128).map(_.mkString)
+    } yield token
 
   private def sendVerificationEmail(email: String, emailToken: String): IO[Unit] =
     for {
