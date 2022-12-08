@@ -23,7 +23,7 @@ class Services(repos: Repositories, env: Env, mailTemplates: MailTemplates) {
 
   private val appGroupService = AppGroupService(repos)
   private val applicationService = ApplicationService(repos)
-  private val authService = AuthService(repos, mailService, mailTemplates)
+  private val authService = AuthService(env, repos, mailService, mailTemplates)
 
   private val appGroupEndpoints = AppGroupEndpoints(appGroupService, verifiedAuthenticator)
   private val applicationEndpoints = ApplicationEndpoints(applicationService, verifiedAuthenticator)

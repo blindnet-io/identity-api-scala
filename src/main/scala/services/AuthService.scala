@@ -13,7 +13,7 @@ import cats.effect.std.{Random, UUIDGen}
 
 import java.util.UUID
 
-class AuthService(repos: Repositories, mailService: MailService, templates: MailTemplates) {
+class AuthService(env: Env, repos: Repositories, mailService: MailService, templates: MailTemplates) {
   given UUIDGen[IO] = UUIDGen.fromSync
 
   private def generateStaticToken(): IO[String] =
@@ -23,13 +23,10 @@ class AuthService(repos: Repositories, mailService: MailService, templates: Mail
     } yield token
 
   private def sendVerificationEmail(email: String, emailToken: String): IO[Unit] =
-    for {
-      env <- Env.get
-      template = templates.verify
-        .map(_.replace("$verification_link$", s"${env.baseUrl}/verify?token=$emailToken"))
-      mail = Mail.fromTemplate(template)(env.mailSender, List(email))
-      _ <- mailService.send(mail)
-    } yield ()
+    val template = templates.verify
+      .map(_.replace("$verification_link$", s"${env.baseUrl}/verify?token=$emailToken"))
+    val mail = Mail.fromTemplate(template)(env.mailSender, List(email))
+    mailService.send(mail)
 
   def login(payload: LoginPayload): IO[LoginResponsePayload] =
     for {
