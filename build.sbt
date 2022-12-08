@@ -17,6 +17,7 @@ lazy val root = (project in file("."))
     idePackagePrefix := Some("io.blindnet.identity"),
     resolvers += "Blindnet Snapshots" at "https://nexus.blindnet.io/repository/maven-snapshots",
     libraryDependencies ++= Seq(
+      "com.password4j"              %  "password4j"                      % "1.6.2",
       "com.softwaremill.sttp.tapir" %% "tapir-core"                      % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-http4s-server"             % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"                % tapirVersion,
@@ -29,7 +30,6 @@ lazy val root = (project in file("."))
       "org.flywaydb"                %  "flyway-core"                     % "9.3.0",
       "org.http4s"                  %% "http4s-blaze-server"             % http4sVersion,
       "org.http4s"                  %% "http4s-circe"                    % http4sVersion,
-      "org.mindrot"                 %  "jbcrypt"                         % "0.4",
       "org.scalatest"               %% "scalatest"                       % "3.2.12" % Test,
       "org.slf4j"                   %  "slf4j-simple"                    % "2.0.1",
       "org.tpolecat"                %% "doobie-core"                     % doobieVersion,
