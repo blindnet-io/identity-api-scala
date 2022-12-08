@@ -21,6 +21,10 @@ class AccountRepository(xa: Transactor[IO]) extends StRepository[Account, IO] {
     sql"select id, email, password, token, verified, email_token from accounts where token=$token"
       .query[Account].option.transact(xa)
 
+  def findByEmailToken(token: String): IO[Option[Account]] =
+    sql"select id, email, password, token, verified, email_token from accounts where email_token=$token"
+      .query[Account].option.transact(xa)
+
   def insert(id: UUID, email: String, password: String, token: String, emailToken: String): IO[Unit] =
     sql"insert into accounts (id, email, password, token, email_token) values ($id, $email, $password, $token, $emailToken)"
       .update.run.transact(xa).void

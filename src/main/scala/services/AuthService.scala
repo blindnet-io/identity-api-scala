@@ -51,10 +51,10 @@ class AuthService(repos: Repositories, mailService: MailService, templates: Mail
   def status(acc: Account)(x: Unit): IO[AccountStatusPayload] =
     IO.pure(AccountStatusPayload(acc.verified))
 
-  def verify(acc: Account)(payload: VerifyEmailPayload): IO[Unit] =
+  def verify(payload: VerifyEmailPayload): IO[Unit] =
     for {
+      acc <- repos.accounts.findByEmailToken(payload.token).orBadRequest("Invalid token")
       _ <- (!acc.verified).orBadRequest("Already verified")
-      _ <- (acc.emailToken == payload.token).orBadRequest("Invalid token")
       _ <- repos.accounts.setVerified(acc.id)
     } yield ()
 

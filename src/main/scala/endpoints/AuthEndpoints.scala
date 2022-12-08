@@ -40,7 +40,7 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
       .serverLogicSuccess(service.status)
 
   val verify: ApiEndpoint =
-    authedBase.summary("Verify email")
+    publicBase.summary("Verify email")
       .post
       .in("verify")
       .in(jsonBody[VerifyEmailPayload])
