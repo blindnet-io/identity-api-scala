@@ -67,6 +67,7 @@ class AuthService(repos: Repositories, mailService: MailService, templates: Mail
       _ <- acc.verifyPassword(payload.current_password).map(_.orForbidden)
       emailToken <- generateStaticToken()
       _ <- repos.accounts.updateEmail(acc.id, payload.email, emailToken)
+      _ <- sendVerificationEmail(payload.email, emailToken)
     } yield ()
 
   def changePassword(acc: Account)(payload: ChangePasswordPayload): IO[LoginResponsePayload] =
