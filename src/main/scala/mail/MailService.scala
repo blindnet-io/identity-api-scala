@@ -8,7 +8,7 @@ import org.apache.commons.mail.*
 import scala.util.Try
 
 class MailService(config: MailConfig) {
-  def send(mail: Mail): IO[Unit] = IO {
+  def send(mail: Mail): IO[Unit] = IO.blocking {
     val commons: Email = mail.richMessage match
       case Some(value) => new HtmlEmail().setHtmlMsg(value).setTextMsg(mail.message)
       case None => new SimpleEmail().setMsg(mail.message)
