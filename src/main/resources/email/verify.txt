@@ -1,0 +1,5 @@
+Hey!
+
+Click here to verify your account: $verification_link$.
+
+Best regards.

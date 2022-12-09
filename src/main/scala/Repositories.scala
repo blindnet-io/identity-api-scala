@@ -9,6 +9,7 @@ import doobie.util.*
 
 class Repositories(xa: Transactor[IO]) {
   val accounts: AccountRepository         = AccountRepository(xa)
+  val appGroups: AppGroupRepository       = AppGroupRepository(xa)
   val applications: ApplicationRepository = ApplicationRepository(xa)
 }
 
@@ -24,5 +25,4 @@ object Repositories {
         ec
       )
     } yield new Repositories(xa)
-
 }
