@@ -3,7 +3,7 @@ alter table accounts
     add password text not null default '',
     add token text not null default '';
 
-create unique index on accounts (email);
+create index on accounts (email);
 
 alter table accounts
     alter email drop default,
