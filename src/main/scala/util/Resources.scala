@@ -13,4 +13,5 @@ object Resources {
     OptionT(getAsStream(resource))
       .semiflatMap(_.through(fs2.text.utf8.decode).compile.string)
       .value
+
 }

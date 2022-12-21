@@ -17,7 +17,8 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
   private val authedBase = authenticator.withBaseEndpoint(publicBase).secureEndpoint
 
   val login: ApiEndpoint =
-    publicBase.summary("Login using an email address and password")
+    publicBase
+      .summary("Login using an email address and password")
       .post
       .in("login")
       .in(jsonBody[LoginPayload])
@@ -25,7 +26,8 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
       .serverLogicSuccess(service.login)
 
   val register: ApiEndpoint =
-    publicBase.summary("Register using an email address and password")
+    publicBase
+      .summary("Register using an email address and password")
       .post
       .in("register")
       .in(jsonBody[RegisterPayload])
@@ -33,34 +35,39 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
       .serverLogicSuccess(service.register)
 
   val status: ApiEndpoint =
-    authedBase.summary("Get account status")
+    authedBase
+      .summary("Get account status")
       .get
       .in("status")
       .out(jsonBody[AccountStatusPayload])
       .serverLogicSuccess(service.status)
 
   val verify: ApiEndpoint =
-    publicBase.summary("Verify email")
+    publicBase
+      .summary("Verify email")
       .post
       .in("verify")
       .in(jsonBody[VerifyEmailPayload])
       .serverLogicSuccess(service.verify)
 
   val resendVerification: ApiEndpoint =
-    authedBase.summary("Resend verification email")
+    authedBase
+      .summary("Resend verification email")
       .post
       .in("resend-verification")
       .serverLogicSuccess(service.resendVerification)
 
   val updateEmail: ApiEndpoint =
-    authedBase.summary("Update email")
+    authedBase
+      .summary("Update email")
       .post
       .in("update-email")
       .in(jsonBody[UpdateEmailPayload])
       .serverLogicSuccess(service.updateEmail)
 
   val changePassword: ApiEndpoint =
-    authedBase.summary("Change password")
+    authedBase
+      .summary("Change password")
       .post
       .in("change-password")
       .in(jsonBody[ChangePasswordPayload])
@@ -74,6 +81,7 @@ class AuthEndpoints(service: AuthService, authenticator: AccountAuthenticator) {
     verify,
     resendVerification,
     updateEmail,
-    changePassword,
+    changePassword
   )
+
 }

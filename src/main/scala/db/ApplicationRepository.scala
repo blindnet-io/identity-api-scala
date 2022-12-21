@@ -52,10 +52,9 @@ class ApplicationRepository(xa: Transactor[IO]) {
     """.update.run.transact(xa).void
 
   def updateName(id: UUID, name: String): IO[Unit] =
-    sql"update applications set name=$name where id=$id"
-      .update.run.transact(xa).void
+    sql"update applications set name=$name where id=$id".update.run.transact(xa).void
 
   def delete(id: UUID): IO[Unit] =
-    sql"delete from applications where id=$id"
-      .update.run.transact(xa).void
+    sql"delete from applications where id=$id".update.run.transact(xa).void
+
 }

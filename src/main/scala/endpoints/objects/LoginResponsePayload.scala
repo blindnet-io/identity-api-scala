@@ -5,8 +5,8 @@ import io.circe.Decoder
 import io.circe.generic.semiauto.*
 
 case class LoginResponsePayload(
-  token: String,
-  status: AccountStatusPayload
+    token: String,
+    status: AccountStatusPayload
 )
 
 object LoginResponsePayload {

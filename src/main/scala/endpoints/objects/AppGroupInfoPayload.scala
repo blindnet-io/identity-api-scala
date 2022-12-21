@@ -9,9 +9,9 @@ import io.circe.generic.semiauto.deriveEncoder
 import java.util.UUID
 
 case class AppGroupInfoPayload(
-  id: UUID,
-  name: String,
-  key: String,
+    id: UUID,
+    name: String,
+    key: String
 )
 
 object AppGroupInfoPayload {
@@ -19,4 +19,5 @@ object AppGroupInfoPayload {
 
   def apply(appGroup: AppGroup): AppGroupInfoPayload =
     new AppGroupInfoPayload(appGroup.id, appGroup.name, appGroup.key)
+
 }

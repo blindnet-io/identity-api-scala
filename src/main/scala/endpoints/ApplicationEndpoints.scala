@@ -17,28 +17,32 @@ class ApplicationEndpoints(service: ApplicationService, authenticator: AccountAu
   private val authedBase = authenticator.withBaseEndpoint(publicBase).secureEndpoint
 
   val get: ApiEndpoint =
-    publicBase.summary("Get application info")
+    publicBase
+      .summary("Get application info")
       .get
       .in(path[UUID]("id"))
       .out(jsonBody[ApplicationInfoPayload])
       .serverLogicSuccess(service.get)
 
   val create: ApiEndpoint =
-    authedBase.summary("Create an application")
+    authedBase
+      .summary("Create an application")
       .post
       .in(jsonBody[CreateApplicationPayload])
       .out(jsonBody[UUID])
       .serverLogicSuccess(service.create)
 
   val update: ApiEndpoint =
-    authedBase.summary("Update an application")
+    authedBase
+      .summary("Update an application")
       .post
       .in(path[UUID]("id"))
       .in(jsonBody[UpdateApplicationPayload])
       .serverLogicSuccess(service.update)
 
   val delete: ApiEndpoint =
-    authedBase.summary("Delete an application")
+    authedBase
+      .summary("Delete an application")
       .delete
       .in(path[UUID]("id"))
       .serverLogicSuccess(service.delete)
@@ -47,6 +51,7 @@ class ApplicationEndpoints(service: ApplicationService, authenticator: AccountAu
     get,
     create,
     update,
-    delete,
+    delete
   )
+
 }

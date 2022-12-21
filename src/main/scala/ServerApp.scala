@@ -18,7 +18,7 @@ class ServerApp(env: Env) {
 
   val server: Resource[IO, Server] =
     for {
-      repos <- Repositories(env)
+      repos     <- Repositories(env)
       templates <- Resource.eval(MailTemplates.load())
       services = Services(repos, env, templates)
       server <- BlazeServerBuilder[IO]

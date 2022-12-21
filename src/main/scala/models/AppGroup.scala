@@ -7,10 +7,10 @@ import io.circe.generic.semiauto.*
 import java.util.UUID
 
 case class AppGroup(
-  id: UUID,
-  accountId: UUID,
-  name: String,
-  key: String,
+    id: UUID,
+    accountId: UUID,
+    name: String,
+    key: String
 )
 
 object AppGroup {

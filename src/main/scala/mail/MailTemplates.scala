@@ -4,7 +4,7 @@ package mail
 import cats.effect.IO
 
 case class MailTemplates(
-  verify: MailTemplate
+    verify: MailTemplate
 )
 
 object MailTemplates {
@@ -12,4 +12,5 @@ object MailTemplates {
     for {
       verify <- MailTemplate.load("Account verification", "verify")
     } yield new MailTemplates(verify)
+
 }
