@@ -5,6 +5,7 @@ import cats.implicits.*
 import io.blindnet.identity.mail.MailTemplates
 import org.http4s.HttpApp
 import org.http4s.blaze.server.*
+import org.http4s.ember.client.*
 import org.http4s.implicits.*
 import org.http4s.server.*
 import org.http4s.server.websocket.WebSocketBuilder2
@@ -20,7 +21,8 @@ class ServerApp(env: Env) {
     for {
       repos     <- Repositories(env)
       templates <- Resource.eval(MailTemplates.load())
-      services = Services(repos, env, templates)
+      client    <- EmberClientBuilder.default[IO].build
+      services = Services(repos, env, templates, client)
       server <- BlazeServerBuilder[IO]
         .bindHttp(env.port, env.host)
         .withHttpApp(app(services))

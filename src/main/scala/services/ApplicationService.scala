@@ -9,8 +9,9 @@ import cats.effect.*
 import cats.effect.std.UUIDGen
 
 import java.util.UUID
+import io.blindnet.identity.clients.PceClient
 
-class ApplicationService(repos: Repositories) {
+class ApplicationService(repos: Repositories, pceClient: PceClient) {
   given UUIDGen[IO] = UUIDGen.fromSync
 
   def get(id: UUID): IO[ApplicationInfoPayload] =
@@ -24,6 +25,7 @@ class ApplicationService(repos: Repositories) {
       _  <- repos.appGroups.findById(acc.id, payload.group_id).orNotFound
       id <- UUIDGen.randomUUID
       _  <- repos.applications.insert(id, payload.group_id, payload.name)
+      _  <- pceClient.createApp(id)
     } yield id
 
   def update(acc: Account)(id: UUID, payload: UpdateApplicationPayload): IO[Unit] =
