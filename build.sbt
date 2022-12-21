@@ -29,6 +29,7 @@ lazy val root = (project in file("."))
       "org.apache.commons"           % "commons-email"                 % "1.5",
       "org.flywaydb"                 % "flyway-core"                   % "9.3.0",
       "org.http4s"                  %% "http4s-blaze-server"           % http4sVersion,
+      "org.http4s"                  %% "http4s-ember-client"           % http4sVersion,
       "org.http4s"                  %% "http4s-circe"                  % http4sVersion,
       "org.scalatest"               %% "scalatest"                     % "3.2.12"     % Test,
       "org.slf4j"                    % "slf4j-simple"                  % "2.0.1",
