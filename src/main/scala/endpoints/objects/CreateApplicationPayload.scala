@@ -6,9 +6,9 @@ import io.circe.generic.semiauto.deriveDecoder
 
 import java.util.UUID
 
-case class CreateApplicationPayload (
-  group_id: UUID,
-  name: String,
+case class CreateApplicationPayload(
+    group_id: UUID,
+    name: String
 )
 
 object CreateApplicationPayload {

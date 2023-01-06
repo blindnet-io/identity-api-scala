@@ -5,8 +5,8 @@ import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 
 case class CreateAppGroupPayload(
-  name: String,
-  key: String,
+    name: String,
+    key: String
 )
 
 object CreateAppGroupPayload {
