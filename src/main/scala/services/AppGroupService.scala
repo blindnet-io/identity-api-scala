@@ -25,11 +25,11 @@ class AppGroupService(repos: Repositories) {
       .orNotFound
       .map(AppGroupInfoPayload(_))
 
-  def getApps(acc: Account)(id: UUID): IO[List[ApplicationInfoPayload]] =
+  def getApps(acc: Account)(id: UUID): IO[List[ApplicationInfoLitePayload]] =
     for {
       _    <- repos.appGroups.findById(acc.id, id).orNotFound
       apps <- repos.applications.findAllByGroup(id)
-    } yield apps.map(ApplicationInfoPayload(_))
+    } yield apps.map(ApplicationInfoLitePayload(_))
 
   def getAll(acc: Account)(x: Unit): IO[List[AppGroupInfoPayload]] =
     repos.appGroups

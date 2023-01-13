@@ -13,9 +13,7 @@ import sttp.tapir.json.circe.*
 import java.util.UUID
 
 class AppGroupEndpoints(service: AppGroupService, authenticator: AccountAuthenticator) {
-  private val base = authenticator
-    .withBaseEndpoint(endpoint.tag("Application groups").in("app-groups"))
-    .secureEndpoint
+  private val base = authenticator.secureEndpoint(endpoint.tag("Application groups").in("app-groups"))
 
   val create: ApiEndpoint =
     base
@@ -39,7 +37,7 @@ class AppGroupEndpoints(service: AppGroupService, authenticator: AccountAuthenti
       .get
       .in(path[UUID]("id"))
       .in("applications")
-      .out(jsonBody[List[ApplicationInfoPayload]])
+      .out(jsonBody[List[ApplicationInfoLitePayload]])
       .serverLogicSuccess(service.getApps)
 
   val getAll: ApiEndpoint =

@@ -24,6 +24,7 @@ case class Env(
     emailFromName: String,
     pceUri: Uri,
     pceToken: Secret[String],
+    tokenSigningKey: Secret[String],
     sendInternalErrorMessages: Boolean
 ) {
   def mailConfig: MailConfig =
@@ -74,6 +75,8 @@ trait EnvLoader {
 
   def pceToken: ConfigValue[Effect, Secret[String]]
 
+  def tokenSigningKey: ConfigValue[Effect, Secret[String]]
+
   def sendInternalErrorMessages: ConfigValue[Effect, Boolean]
 
   def load =
@@ -93,6 +96,7 @@ trait EnvLoader {
       emailFromName,
       pceUri,
       pceToken,
+      tokenSigningKey,
       sendInternalErrorMessages
     )
       .parMapN(Env.apply)
@@ -114,6 +118,8 @@ class ProductionEnv() extends EnvLoader {
   override def emailFromName  = env("BN_EMAIL_FROM_NAME").as[String]
 
   override def pceToken = env("BN_PCE_TOKEN").as[String].secret
+
+  override def tokenSigningKey = env("BN_SIGNING_KEY").as[String].secret
 
   override def sendInternalErrorMessages = ConfigValue.default(false)
 }

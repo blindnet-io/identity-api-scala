@@ -14,7 +14,7 @@ import java.util.UUID
 
 class ApplicationEndpoints(service: ApplicationService, authenticator: AccountAuthenticator) {
   private val publicBase = endpoint.tag("Applications").in("applications")
-  private val authedBase = authenticator.withBaseEndpoint(publicBase).secureEndpoint
+  private val authedBase = authenticator.secureEndpoint(publicBase)
 
   val get: ApiEndpoint =
     publicBase

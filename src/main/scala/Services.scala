@@ -26,7 +26,7 @@ class Services(repos: Repositories, env: Env, mailTemplates: MailTemplates, clie
   private val mailService = MailService(env.mailConfig)
 
   private val appGroupService    = AppGroupService(repos)
-  private val applicationService = ApplicationService(repos, pceClient)
+  private val applicationService = ApplicationService(env, repos, pceClient)
   private val authService        = AuthService(env, repos, mailService, mailTemplates)
 
   private val appGroupEndpoints    = AppGroupEndpoints(appGroupService, verifiedAuthenticator)

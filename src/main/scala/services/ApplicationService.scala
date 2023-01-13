@@ -10,15 +10,19 @@ import cats.effect.std.UUIDGen
 
 import java.util.UUID
 import io.blindnet.identity.clients.PceClient
+import io.blindnet.jwt.{ TokenPrivateKey, TokenBuilder }
 
-class ApplicationService(repos: Repositories, pceClient: PceClient) {
+class ApplicationService(env: Env, repos: Repositories, pceClient: PceClient) {
   given UUIDGen[IO] = UUIDGen.fromSync
 
   def get(id: UUID): IO[ApplicationInfoPayload] =
-    repos.applications
-      .findById(id)
-      .orNotFound
-      .map(ApplicationInfoPayload.apply)
+    for {
+      app <- repos.applications.findById(id).orNotFound
+      key          = TokenPrivateKey.fromString(env.tokenSigningKey.value)
+      tokenBuilder = new TokenBuilder(app.id, key)
+      token        = tokenBuilder.app()
+      resp         = ApplicationInfoPayload(app, token, token)
+    } yield resp
 
   def create(acc: Account)(payload: CreateApplicationPayload): IO[UUID] =
     for {
