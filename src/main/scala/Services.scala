@@ -29,11 +29,13 @@ class Services(repos: Repositories, env: Env, mailTemplates: MailTemplates, clie
   private val applicationService = ApplicationService(env, repos, pceClient)
   private val authService        = AuthService(env, repos, mailService, mailTemplates)
 
+  private val healthEndpoints      = HealthCheckEndpoints()
   private val appGroupEndpoints    = AppGroupEndpoints(appGroupService, verifiedAuthenticator)
   private val applicationEndpoints = ApplicationEndpoints(applicationService, verifiedAuthenticator)
   private val authEndpoints        = AuthEndpoints(authService, authenticator)
 
   private val apiEndpoints = List(
+    healthEndpoints.list,
     appGroupEndpoints.list,
     applicationEndpoints.list,
     authEndpoints.list
